@@ -10,7 +10,7 @@ class TransformStringToTensor:
     def __init__(self):
         self.dictionary = Dictionary.word_convert
 
-    def transform(self, phrase: str) -> torch.float32:
+    def transform_string_to_tensor(self, phrase: str) -> torch.float32:
 
         words = phrase.split()
         words_normalize = self.normalize(words)
