@@ -1,30 +1,30 @@
 from typing import List
 import torch
 import numpy as np
-
-from dictionary import Dictionary
+import re
+import json
 
 
 class TransformStringToTensor:
 
     def __init__(self):
-        self.dictionary = Dictionary.word_convert
+        with open('dictionary.json') as json_file:
+            self.dictionary = json.load(json_file)
 
     def transform_string_to_tensor(self, phrase: str) -> torch.float32:
 
-        words = phrase.split()
-        words_normalize = self.normalize(words)
-        words_numbers = self.transform_word_to_int(words_normalize)
+        words = self.normalize(phrase)
+        words_numbers = self.transform_word_to_int(words)
         words_numbers = self.adjustment_size(words_numbers)
         tensor = self.transform_to_tensor(words_numbers)
 
         return tensor
 
-    def normalize(self, words: List[str]) -> List[str]:
+    def normalize(self, phrase: str) -> List[str]:
 
-        words_normalize = words
+        words = re.findall(r"[\w']+|[.,!?;/:(){}]", phrase)
 
-        return words_normalize
+        return words
 
     def transform_word_to_int(self, words: List[str]) -> List[int]:
 
@@ -34,7 +34,12 @@ class TransformStringToTensor:
             if word in self.dictionary.keys():
                 numbers.append(self.dictionary[word])
             else:
-                numbers.append(1000)
+                self.dictionary['numero_de_palavras'] += 1
+                self.dictionary[word] = self.dictionary['numero_de_palavras']
+                numbers.append(self.dictionary['numero_de_palavras'])
+
+                with open('dictionary.json', 'w') as outfile:
+                    json.dump(self.dictionary, outfile)
 
         return numbers
 

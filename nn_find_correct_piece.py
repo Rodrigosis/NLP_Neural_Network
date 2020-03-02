@@ -8,37 +8,55 @@ class FindCorrectPiece(nn.Module):
         super(FindCorrectPiece, self).__init__()
         torch.manual_seed(42)
 
-        self.hidden = nn.Linear(50, 200)
-        self.tanh = nn.ReLU()
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
+
+        self.input = nn.Linear(50, 200)
+        self.relu = nn.ReLU()
         self.out = nn.Linear(200, 50)
-        self.hardtanh = nn.Sigmoid()
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        feature = self.tanh(self.hidden(x))
-        output = self.hardtanh(self.out(feature))
 
+        x.to(self.device)
+        feature = self.relu(self.input(x))
+        output = self.sigmoid(self.out(feature))
         return output
 
-    @staticmethod
-    def criterion_l1_loss(predicted, real):
+    def criterion_l1_loss(self, predicted, real):
+        predicted.to(self.device)
+        real.to(self.device)
+        criterion = nn.L1Loss().to(self.device)
+        loss_l1 = criterion(predicted, real)
+        return loss_l1
 
-        criterion = nn.L1Loss()
-        t = criterion(predicted, real)
-        return t
+    def criterion_mse_loss(self, predicted, real):
+        predicted.to(self.device)
+        real.to(self.device)
+        criterion = nn.MSELoss().to(self.device)
+        loss_mse = criterion(predicted, real)
 
-    @staticmethod
-    def criterion_mse_loss(predicted, real):
-
-        criterion = nn.MSELoss()
-        t = criterion(predicted, real)
-
-        return t
+        return loss_mse
 
 
-def optimizer(rede, ):
-    opt = optim.Adam(FindCorrectPiece().parameters(), lr=1e-3)
+def optimizer(net, x, real_x):
+    device = torch.device('cpu')
+    x.to(device)
+    real_x.to(device)
+    test = []
 
-    return opt
+    for i in range(1000):
+        pred_x = net(x)
+        opt = optim.Adam(FindCorrectPiece().parameters(), lr=1e-3, weight_decay=0)
+        net_loss = net.criterion_l1_loss(pred_x[0], real_x[0])
+        net_loss.backward()
+        opt.step()
+
+        if i % 100 == 0:
+            test.append(float(net_loss.data))
+            print(float(net_loss.data))
 
 
 if __name__ == '__main__':
@@ -68,3 +86,5 @@ if __name__ == '__main__':
 
     loss2 = net.criterion_mse_loss(resultado[0], desejado[0])
     print(loss2)
+
+    optimizer(net, tensor, desejado)
