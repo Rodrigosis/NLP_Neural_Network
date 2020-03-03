@@ -34,23 +34,6 @@ class FindCorrectPiece(nn.Module):
         return loss_mse
 
 
-def optimizer(net, x, real_x):
-    device = torch.device('cpu')
-    x.to(device)
-    real_x.to(device)
-    net.to(device)
-
-    for i in range(1000):
-        pred_x = net(x).to(device)
-        opt = optim.Adam(FindCorrectPiece().parameters(), lr=1e-3, weight_decay=0)
-        net_loss = net.criterion_l1_loss(pred_x, real_x)
-        net_loss.backward()
-        opt.step()
-
-        if i % 100 == 0:
-            print(float(net_loss.data))
-
-
 if __name__ == '__main__':
     from transform_string_to_tensor import TransformStringToTensor
     import pandas as pd
@@ -63,31 +46,57 @@ if __name__ == '__main__':
 
     frases = []
     for frase in dados['texto']:
-        frases.append(frase)
+        frases.append(str(frase))
 
-    binarios = []
-    for lista in dados['binario']:
-        li = []
-        for i in lista:
-            if i == '1':
-                li.append(1)
-            elif i == '0':
-                li.append(0)
-        li = transform.adjustment_size(li)
-        binarios.append(np.array(li).astype(np.float32))
+    lista = []
+    for frase in frases:
+        lenn = transform.split_phrase([frase])
+        if len(lenn[0]) <= 45:
+            lista.append(frase)
 
-    tensor = transform.transform_string_to_tensor(frases)
-    resultado = net(tensor)
+    df = pd.DataFrame(lista)
+    #df.to_csv('C:/Users/nataly/OneDrive/Documentos/dataset_de_treino_len_45.csv', header=False)
 
-    desejado = transform.transform_to_tensor(binarios)
+    print(net.parameters())
+    print(net)
 
-    print(resultado.shape)
-    print(desejado.shape)
 
-    loss = net.criterion_l1_loss(resultado, desejado)
-    print(loss)
+    # tensor = transform.transform_string_to_tensor(frases)
+    # resultado = net(tensor)
 
-    loss2 = net.criterion_mse_loss(resultado, desejado)
-    print(loss2)
+    # print(resultado.shape)
 
-    optimizer(net, tensor, desejado)
+    # loss = net.criterion_l1_loss(resultado, desejado)
+    # print(loss)
+    #
+    # loss2 = net.criterion_mse_loss(resultado, desejado)
+    # print(loss2)
+    #
+    # optimizer(net, tensor, desejado)
+    #
+    # testes = ['working knowledge of project and construction sequencing & scheduling',
+    #           'the candidate should also possess knowledge of work performed in other labs and assist as needed',
+    #           'candidate should possess experience with Windows 7, TCP/IP, and Web and Network LAN based systems',
+    #           'proficient in microservices and building high performant, scalable applications',
+    #           'individual must have a minimum of three years hotel, convention/conference or event planning experience required',
+    #           'bachelor’s Degree in Finance or Accounting required (MBA preferred, not required)',
+    #           'proficient in code versioning tools, such as GitHub',
+    #           'bachelors Degree required',
+    #           'minimum 5 years of experience in the physical security, fire alarm or low voltage communication industry installing field devices, programming systems, and running medium',
+    #           'expert in HTML5, CSS3, JavaScript. Knowledge of third-party libraries like jQuery, NodeJS, Angular and React Js is must']
+    #
+    # for i in testes:
+    #
+    #     tensor = transform.transform_string_to_tensor([i])
+    #     res = net(tensor)
+    #
+    #     req = transform.split_phrase([i])
+    #
+    #     frase = ''
+    #     for resp, req in zip(res[0], req[0]):
+    #         if resp >= 0.5:
+    #             frase = frase + ' ' + req
+    #
+    #     print(i)
+    #     print(frase.strip())
+    #     print(' ')

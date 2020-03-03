@@ -24,7 +24,7 @@ class TransformStringToTensor:
         words = []
 
         for phrase in phrases:
-            word = re.findall(r"[\w']+|[.,!?;/:(){}]", phrase)
+            word = re.findall(r"[\w']+|[''.,ª&º@#|$°%!–`´<’>*?;/:“”(){}\+\-]", phrase)
             words.append(word)
 
         return words
@@ -53,13 +53,16 @@ class TransformStringToTensor:
     @staticmethod
     def transform_to_tensor(words_num: List):
 
-        array = np.array(words_num[:400])
+        array = np.array(words_num)
         tensor = torch.from_numpy(array).float()
 
         return tensor
 
     @staticmethod
     def adjustment_size(phrase: List[int]) -> List[int]:
+
+        if len(phrase) > 50:
+            phrase = []
 
         while len(phrase) < 50:
             phrase.append(0)
