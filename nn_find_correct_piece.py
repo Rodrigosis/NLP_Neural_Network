@@ -50,7 +50,7 @@ def optimizer(net, x, real_x):
     for i in range(1000):
         pred_x = net(x)
         opt = optim.Adam(FindCorrectPiece().parameters(), lr=1e-3, weight_decay=0)
-        net_loss = net.criterion_l1_loss(pred_x[0], real_x[0])
+        net_loss = net.criterion_l1_loss(pred_x, real_x)
         net_loss.backward()
         opt.step()
 
@@ -63,40 +63,43 @@ if __name__ == '__main__':
     from transform_string_to_tensor import TransformStringToTensor
     import pandas as pd
 
-    dados = pd.read_csv('C:/Users/nataly/OneDrive/Documentos/requirement_vetor_binario.csv', index_col=False)
+    dados = pd.read_csv('C:/Users/rodri/Downloads/requirement_vetor_binario.csv', index_col=False)
     print(dados.tail(5))
 
-    teste = dados['binario'][0]
+    net = FindCorrectPiece()
+    transform = TransformStringToTensor()
 
-    print(teste)
+    frases = []
+    for frase in dados['texto']:
+        frases.append(frase)
 
-    t = list(teste)
+    binarios = []
+    for lista in dados['binario']:
+        li = []
+        for i in lista:
+            if i == '1':
+                li.append(1)
+            elif i == '0':
+                li.append(0)
+        binarios.append(li)
 
-    print(t)
+    tensor = transform.transform_string_to_tensor(frases)
+    print(tensor)
 
-    # net = FindCorrectPiece()
-    # transform = TransformStringToTensor()
-    #
-    # frase = 'must have a valid driver’s license'
-    #
-    # tensor = transform.transform_string_to_tensor(frase)
-    # print(tensor)
-    #
-    # resultado = net(tensor)
-    # print(resultado)
-    #
-    # desejado = [0, 0, 1, 1, 1, 1]
-    # desejado = transform.adjustment_size(desejado)
-    # desejado = transform.transform_to_tensor(desejado)
-    # print(desejado)
-    #
-    # print(resultado.shape)
-    # print(desejado.shape)
-    #
-    # loss = net.criterion_l1_loss(resultado[0], desejado[0])
-    # print(loss)
-    #
-    # loss2 = net.criterion_mse_loss(resultado[0], desejado[0])
-    # print(loss2)
-    #
+    resultado = net(tensor)
+    print(resultado)
+
+    desejado = transform.adjustment_size(binarios)
+    desejado = transform.transform_to_tensor(binarios)
+    print(desejado)
+
+    print(resultado.shape)
+    print(desejado.shape)
+
+    loss = net.criterion_l1_loss(resultado, desejado)
+    print(loss)
+
+    loss2 = net.criterion_mse_loss(resultado, desejado)
+    print(loss2)
+
     # optimizer(net, tensor, desejado)
