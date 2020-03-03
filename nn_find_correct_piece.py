@@ -50,7 +50,7 @@ def optimizer(net, x, real_x):
     for i in range(1000):
         pred_x = net(x)
         opt = optim.Adam(FindCorrectPiece().parameters(), lr=1e-3, weight_decay=0)
-        net_loss = net.criterion_l1_loss(pred_x[0], real_x[0])
+        net_loss = net.criterion_l1_loss(pred_x, real_x)
         net_loss.backward()
         opt.step()
 
@@ -69,33 +69,37 @@ if __name__ == '__main__':
     net = FindCorrectPiece()
     transform = TransformStringToTensor()
 
-    contador = 0
-    for req in dados['texto']:
-        contador += 1
-        split = transform.split_phrase(req)
-        dicti = transform.transform_word_to_int(split)
-        print(contador)
+    frases = []
+    for frase in dados['texto']:
+        frases.append(frase)
 
-    frase = 'must have a valid driver’s license'
+    binarios = []
+    for lista in dados['binario']:
+        li = []
+        for i in lista:
+            if i == '1':
+                li.append(1)
+            elif i == '0':
+                li.append(0)
+        binarios.append(li)
 
-    # tensor = transform.transform_string_to_tensor(frase)
-    # print(tensor)
-    #
-    # resultado = net(tensor)
-    # print(resultado)
-    #
-    # desejado = [0, 0, 1, 1, 1, 1]
-    # desejado = transform.adjustment_size(desejado)
-    # desejado = transform.transform_to_tensor(desejado)
-    # print(desejado)
-    #
-    # print(resultado.shape)
-    # print(desejado.shape)
-    #
-    # loss = net.criterion_l1_loss(resultado[0], desejado[0])
-    # print(loss)
-    #
-    # loss2 = net.criterion_mse_loss(resultado[0], desejado[0])
-    # print(loss2)
-    #
+    tensor = transform.transform_string_to_tensor(frases)
+    print(tensor)
+
+    resultado = net(tensor)
+    print(resultado)
+
+    desejado = transform.adjustment_size(binarios)
+    desejado = transform.transform_to_tensor(binarios)
+    print(desejado)
+
+    print(resultado.shape)
+    print(desejado.shape)
+
+    loss = net.criterion_l1_loss(resultado, desejado)
+    print(loss)
+
+    loss2 = net.criterion_mse_loss(resultado, desejado)
+    print(loss2)
+
     # optimizer(net, tensor, desejado)
