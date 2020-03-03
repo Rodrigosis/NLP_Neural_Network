@@ -15,7 +15,6 @@ class TransformStringToTensor:
 
         words = self.split_phrase(phrases)
         words_numbers = self.transform_word_to_int(words)
-        words_numbers = self.adjustment_size(words_numbers)
         tensor = self.transform_to_tensor(words_numbers)
 
         return tensor
@@ -30,7 +29,7 @@ class TransformStringToTensor:
 
         return words
 
-    def transform_word_to_int(self, phrases: List[List[str]]) -> List[List[int]]:
+    def transform_word_to_int(self, phrases: List[List[str]]) -> List:
         phrases_int = []
 
         for phrase in phrases:
@@ -45,28 +44,24 @@ class TransformStringToTensor:
 
                     with open('dictionary.json', 'w') as outfile:
                         json.dump(self.dictionary, outfile)
-            phrases_int.append(numbers)
+
+            numbers = self.adjustment_size(numbers)
+            phrases_int.append(np.array(numbers).astype(np.float32))
 
         return phrases_int
 
     @staticmethod
-    def adjustment_size(phrases: List[List[int]]) -> List[List[int]]:
+    def transform_to_tensor(words_num: List):
 
-        for phrase in phrases:
-            while len(phrase) < 50:
-                phrase.append(0)
-
-        return phrases
-
-    @staticmethod
-    def transform_to_tensor(words_num: List[List[int]]) -> torch.float32:
-
-        nums = []
-        for word_num in words_num:
-            num = np.array(word_num)
-            nums.append(num)
-
-        array = np.array(nums)
+        array = np.array(words_num[:400])
         tensor = torch.from_numpy(array).float()
 
         return tensor
+
+    @staticmethod
+    def adjustment_size(phrase: List[int]) -> List[int]:
+
+        while len(phrase) < 50:
+            phrase.append(0)
+
+        return phrase
