@@ -13,14 +13,15 @@ class TransformStringToTensor:
 
     def transform_string_to_tensor(self, phrase: str) -> torch.float32:
 
-        words = self.normalize(phrase)
+        words = self.split_phrase(phrase)
         words_numbers = self.transform_word_to_int(words)
         words_numbers = self.adjustment_size(words_numbers)
         tensor = self.transform_to_tensor(words_numbers)
 
         return tensor
 
-    def normalize(self, phrase: str) -> List[str]:
+    @staticmethod
+    def split_phrase(phrase: str) -> List[str]:
 
         words = re.findall(r"[\w']+|[.,!?;/:(){}]", phrase)
 
