@@ -11,10 +11,10 @@ class TransformStringToTensor:
         with open('dictionary.json') as json_file:
             self.dictionary = json.load(json_file)
 
-    def transform_string_to_tensor(self, phrases: List[str]) -> torch.float32:
+    def transform_string_to_tensor(self, phrases: List[str], output_data: bool) -> torch.float32:
 
         words = self.split_phrase(phrases)
-        words_numbers = self.transform_word_to_int(words)
+        words_numbers = self.transform_word_to_int(words, output_data)
         tensor = self.transform_to_tensor(words_numbers)
 
         return tensor
@@ -29,7 +29,7 @@ class TransformStringToTensor:
 
         return words
 
-    def transform_word_to_int(self, phrases: List[List[str]]) -> List:
+    def transform_word_to_int(self, phrases: List[List[str]], output_data: bool) -> List:
         phrases_int = []
 
         for phrase in phrases:
@@ -45,7 +45,7 @@ class TransformStringToTensor:
                     with open('dictionary.json', 'w') as outfile:
                         json.dump(self.dictionary, outfile)
 
-            numbers = self.adjustment_size(numbers)
+            numbers = self.adjustment_size(numbers, output_data)
             phrases_int.append(np.array(numbers).astype(np.float32))
 
         return phrases_int
@@ -59,9 +59,19 @@ class TransformStringToTensor:
         return tensor
 
     @staticmethod
-    def adjustment_size(phrase: List[int]) -> List[int]:
+    def adjustment_size(phrase: List[int], output_data: bool) -> List[int]:
 
         assert len(phrase) <= 50
+
+        if output_data:
+            phrase_output_data = []
+            for i in phrase:
+                if i == 0:
+                    phrase_output_data.append(0)
+                else:
+                    phrase_output_data.append(1)
+
+            phrase = phrase_output_data
 
         while len(phrase) < 50:
             phrase.append(0)
