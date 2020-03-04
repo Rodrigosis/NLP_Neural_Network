@@ -1,6 +1,5 @@
 if __name__ == '__main__':
     from manager_neural_networks import ManagerNeuralNetworks
-    import pandas as pd
 
     manager = ManagerNeuralNetworks('teste_save_epoch_9.pt', 'teste_save_epoch_9.pt',
                                     'teste_save_epoch_9.pt', 'teste_save_epoch_9.pt')

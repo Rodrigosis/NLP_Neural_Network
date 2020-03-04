@@ -38,9 +38,9 @@ class TransformStringToTensor:
                 if word in self.dictionary.keys():
                     numbers.append(self.dictionary[word])
                 else:
-                    self.dictionary['numero_de_palavras'] += 1
-                    self.dictionary[word] = self.dictionary['numero_de_palavras']
-                    numbers.append(self.dictionary['numero_de_palavras'])
+                    self.dictionary['__WORDS__'] += 1
+                    self.dictionary[word] = self.dictionary['__WORDS__']
+                    numbers.append(self.dictionary['__WORDS__'])
 
                     with open('dictionary.json', 'w') as outfile:
                         json.dump(self.dictionary, outfile)
@@ -77,3 +77,10 @@ class TransformStringToTensor:
             phrase.append(0)
 
         return phrase
+
+    @staticmethod
+    def standardize_string_size(original: str, correct: str) -> str:
+
+        #assert correct in original
+
+        return correct

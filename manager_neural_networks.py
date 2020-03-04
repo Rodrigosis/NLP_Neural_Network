@@ -6,7 +6,7 @@ from nn_complete_requirement import CompleteRequirement
 from nn_choose_type_question import ChooseTypeQuestion
 from nn_confirms_quality import ConfirmsQuality
 from optimizer import Optimizer
-from transform_string_to_tensor import TransformStringToTensor
+from transformers import TransformStringToTensor
 
 
 class ManagerNeuralNetworks:

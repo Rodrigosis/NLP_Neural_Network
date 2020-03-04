@@ -3,13 +3,13 @@ import random
 import torch
 from torch import optim
 
-from transform_string_to_tensor import TransformStringToTensor
+from transformers import TransformStringToTensor
 
 
 class Optimizer:
 
     def __init__(self):
-        self.transform = TransformStringToTensor().transform_string_to_tensor
+        self.transform = TransformStringToTensor()
 
     def optimizer(self, network, data: List[str], correct_output: List[str], batchs: int, epochs: int,
                   learning_rate: float, weight_decay: float, file_name: str):
@@ -35,10 +35,14 @@ class Optimizer:
 
         data_tuples = []
 
-        for req, req_test in zip(data, correct_output):
-            tensor_req = self.transform([req], False)
-            tensor_req_test = self.transform([req_test], True)
-            data_tuples.append((tensor_req, tensor_req_test))
+        for req, req_out in zip(data, correct_output):
+            adjusted_req_out = self.transform.standardize_string_size(req, req_out)
+            tensor_req = self.transform.transform_string_to_tensor([req], False)
+            tensor_req_out = self.transform.transform_string_to_tensor([adjusted_req_out], True)
+
+            assert len(tensor_req) == len(tensor_req_out)
+
+            data_tuples.append((tensor_req, tensor_req_out))
 
         return data_tuples
 
