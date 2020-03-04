@@ -1,38 +1,59 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
+import random
 from torch import optim
+
+from transform_string_to_tensor import TransformStringToTensor
 
 
 class Optimizer:
 
-    def optimizer(self, network, data, data_, batch: int, epoch: int,
+    def __init__(self):
+        self.transform = TransformStringToTensor().transform_string_to_tensor
+
+    def optimizer(self, network, data: List[str], correct_output: List[str], batchs: int, epochs: int,
                   learning_rate: float, weight_decay: float):
 
-        for epoch_range in range(epoch):
+        data_tuples = self.create_tuple(data, correct_output)
 
-            for batch_range in range(batch):
-                pred_x = net(x)
-                opt = optim.Adam(net.parameters(), lr=1e-5, weight_decay=0)
-                net_loss = net.criterion_l1_loss(pred_x, real_x)
-                net_loss.backward()
-                opt.step()
+        for epoch in range(epochs):
+            batch_packages = self.create_batchs(data_tuples, batchs)
 
-                if i % 100 == 0:
-                    print(float(net_loss.data))
+            for batch in batch_packages:
 
-        # epoch = 1000
-        # batch = 10
-        #
-        # nn.Linear(50, 300)
-        # nn.ReLU()
-        # nn.Linear(300, 1000)
-        # nn.ReLU()
-        # nn.Linear(1000, 1000)
-        # nn.ReLU()
-        # nn.Linear(1000, 50)
-        # nn.Sigmoid()
+                pred_data = network(batch['data'])
+                optimizer = optim.Adam(network.parameters(), lr=learning_rate, weight_decay=weight_decay)
+                network_loss = network.criterion_l1_loss(pred_data, batch['correct_output'])
+                network_loss.backward()
+                optimizer.step()
 
-    def create_tuple(self):
-        pass
+                if epoch % 100 == 0:
+                    print(float(network_loss.data))
 
-    def shuffle(self):
-        pass
+    def create_tuple(self, data: List[str], correct_output: List[str]) -> List[Tuple]:
+        assert len(data) == len(correct_output)
+
+        data_tuples = []
+
+        for req, req_test in zip(data, correct_output):
+            tensor_req = self.transform([req])
+            tensor_req_test = self.transform([req_test])
+            data_tuples.append((tensor_req, tensor_req_test))
+
+        return data_tuples
+
+    @staticmethod
+    def create_batchs(data_tuples: List[Tuple], batch) -> List[Dict]:
+        batchs_dict = []
+
+        data_tuples = random.shuffle(data_tuples)
+        batchs = [data_tuples[i::batch] for i in range(batch)]
+
+        for package in batchs:
+            data = []
+            correct_output = []
+            for i in package:
+                data.append(i[0])
+                correct_output.append(i[1])
+            batchs_dict.append({'data': data, 'correct_output': correct_output})
+
+        return batchs_dict

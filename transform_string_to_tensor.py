@@ -61,8 +61,7 @@ class TransformStringToTensor:
     @staticmethod
     def adjustment_size(phrase: List[int]) -> List[int]:
 
-        if len(phrase) > 50:
-            phrase = []
+        assert len(phrase) <= 50
 
         while len(phrase) < 50:
             phrase.append(0)
