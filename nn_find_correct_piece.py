@@ -2,15 +2,6 @@ import torch
 from torch import nn
 
 
-# nn.Linear(50, 300)
-# nn.ReLU()
-# nn.Linear(300, 1000)
-# nn.ReLU()
-# nn.Linear(1000, 1000)
-# nn.ReLU()
-# nn.Linear(1000, 50)
-# nn.Sigmoid()
-
 class FindCorrectPiece(nn.Module):
     def __init__(self):
         super(FindCorrectPiece, self).__init__()
