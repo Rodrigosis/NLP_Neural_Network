@@ -78,9 +78,21 @@ class TransformStringToTensor:
 
         return phrase
 
-    @staticmethod
-    def standardize_string_size(original: str, correct: str) -> str:
+    def standardize_string_size(self, original: str, correct: str) -> str:
 
-        #assert correct in original
+        assert correct in original
 
-        return correct
+        output = correct
+
+        split_original = self.split_phrase([original])
+        split_correct = self.split_phrase([correct])
+
+        n = len(split_correct)
+
+        for i in range(len(split_original)):
+            if split_correct[:n] == split_original[i:n+i]:
+                break
+            else:
+                output = '__ZERO__ ' + output
+
+        return output

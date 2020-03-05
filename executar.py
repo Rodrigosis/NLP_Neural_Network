@@ -1,35 +1,34 @@
 if __name__ == '__main__':
     from manager_neural_networks import ManagerNeuralNetworks
+    import pandas as pd
 
-    manager = ManagerNeuralNetworks('teste_save_epoch_9.pt', 'teste_save_epoch_9.pt',
-                                    'teste_save_epoch_9.pt', 'teste_save_epoch_9.pt')
+    manager = ManagerNeuralNetworks()
 
-    frase = ['working knowledge of project and construction sequencing & scheduling',
-             'working knowledge of project and construction sequencing & scheduling',
-             'working knowledge of project and construction sequencing & scheduling',
-             'working knowledge of project and construction sequencing & scheduling']
+    # req = ['basic understanding of revenue recognition and accounting a plus',
+    #        'basic understanding of product compliance and global certifications',
+    #        'basic understanding of the pharmaceutical industry',
+    #        'basic SQL knowledge and database knowledge required',
+    #        'basic supervisory and leadership skills. Proven successful interpersonal and customer skills required',
+    #        'basic understanding of cabinetry layout, steel fabrication, and construction assembly techniques a plus',
+    #        'basic computer skills/ basic excel skills',
+    #        'basic knowledge of commercial real estate preferred']
+    #
+    # resultado = manager.find_correct_piece(req)
+    #
+    # for res in resultado:
+    #     print(res)
 
-    resultado = manager.find_correct_piece(frase)
-    print(resultado)
+    dados = pd.read_csv('C:/Users/nataly/Downloads/primeiro_teste.csv')
 
-    correto = ['__ZERO__ knowledge of project and construction sequencing & scheduling',
-               '__ZERO__ knowledge of project and construction sequencing & scheduling',
-               '__ZERO__ knowledge of project and construction sequencing & scheduling',
-               '__ZERO__ knowledge of project and construction sequencing & scheduling']
+    requisitos = []
+    corretos = []
+
+    for req, corr in zip(dados['requirements'], dados['correto']):
+        requisitos.append(req)
+        corretos.append(corr)
+
+    loss = manager.teste(requisitos, corretos)
+    print(loss)
 
     from nn_find_correct_piece import FindCorrectPiece
-    manager.optimizer(FindCorrectPiece(), frase, correto, 2, 10, 1e-6, 0, 'teste_save')
-
-    testes = ['working knowledge of project and construction sequencing & scheduling',
-              'the candidate should also possess knowledge of work performed in other labs and assist as needed',
-              'candidate should possess experience with Windows 7, TCP/IP, and Web and Network LAN based systems',
-              'proficient in microservices and building high performant, scalable applications',
-              'individual must have a minimum of three years hotel, convention/conference or event '
-              'planning experience required',
-              'bachelor’s Degree in Finance or Accounting required (MBA preferred, not required)',
-              'proficient in code versioning tools, such as GitHub',
-              'bachelors Degree required',
-              'minimum 5 years of experience in the physical security, fire alarm or low voltage '
-              'communication industry installing field devices, programming systems, and running medium',
-              'expert in HTML5, CSS3, JavaScript. Knowledge of third-party libraries like jQuery, '
-              'NodeJS, Angular and React Js is must']
+    manager.optimizer(FindCorrectPiece(), requisitos, corretos, 5, 1000, 1e-6, 0, 'basic_questions')

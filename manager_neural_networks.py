@@ -11,26 +11,44 @@ from transformers import TransformStringToTensor
 
 class ManagerNeuralNetworks:
 
-    def __init__(self, find_correct_piece_parameters: str, complete_requirement_parameters: str,
-                 choose_type_question_parameters: str, confirms_quality_parameters: str):
+    def __init__(self):
         self._transform = TransformStringToTensor()
         self._find_correct_piece = FindCorrectPiece()
-        torch.save(self._find_correct_piece.state_dict(),
-                   'neural_networks_parameters/' + find_correct_piece_parameters)
         self._complete_requirement = CompleteRequirement()
-        torch.save(self._complete_requirement.state_dict(),
-                   'neural_networks_parameters/' + complete_requirement_parameters)
         self._choose_type_question = ChooseTypeQuestion()
-        torch.save(self._choose_type_question.state_dict(),
-                   'neural_networks_parameters/' + choose_type_question_parameters)
         self._confirms_quality = ConfirmsQuality()
-        torch.save(ConfirmsQuality().state_dict(),
-                   'neural_networks_parameters/' + confirms_quality_parameters)
 
-    def find_correct_piece(self, phrases: List[str]):
+    def find_correct_piece(self, phrases: List[str]) -> List[str]:
+
+        self._find_correct_piece.load_state_dict(
+            torch.load('neural_networks_parameters/nn_find_correct_piece.pt'))
+
         tensor = self._transform.transform_string_to_tensor(phrases, False)
         forecast = self._find_correct_piece(tensor)
-        return forecast
+
+        output = []
+
+        for phrase, vetor in zip(phrases, forecast):
+            split = self._transform.split_phrase([phrase])
+            out = ''
+            for req, ten in zip(split[0], vetor):
+                if ten > 0.5:
+                    out = out + ' ' + req
+
+            output.append(out)
+
+        return output
+
+    def teste(self, phrases: List[str], correct: List[str]):
+        self._find_correct_piece.load_state_dict(
+            torch.load('neural_networks_parameters/nn_find_correct_piece.pt'))
+
+        tensor = self._transform.transform_string_to_tensor(phrases, False)
+        tensor_correct = self._transform.transform_string_to_tensor(correct, True)
+        forecast_1 = self._find_correct_piece.criterion_l1_loss(tensor, tensor_correct)
+        forecast_2 = self._find_correct_piece.criterion_mse_loss(tensor, tensor_correct)
+
+        return forecast_1, forecast_2
 
     def complete_requirement(self):
         pass

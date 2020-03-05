@@ -14,6 +14,7 @@ class Optimizer:
     def optimizer(self, network, data: List[str], correct_output: List[str], batchs: int, epochs: int,
                   learning_rate: float, weight_decay: float, file_name: str):
 
+        best_epoch = 1e6
         data_tuples = self.create_tuple(data, correct_output)
 
         for epoch in range(epochs):
@@ -26,9 +27,13 @@ class Optimizer:
                 network_loss.backward()
                 optimizer.step()
 
-            print(float(loss.data))
+            print(f'{float(loss.data)} epoch: {epoch}')
 
-            torch.save(network.state_dict(), 'optimizer_train/' + file_name + '_epoch_' + str(epoch) + '.pt')
+            if float(loss.data) <= best_epoch:
+                best_epoch = float(loss.data)
+                torch.save(network.state_dict(), 'optimizer_train/' + file_name + '_epoch_' + str(epoch) + '.pt')
+
+        print(f'Melhor resultado: {best_epoch}')
 
     def create_tuple(self, data: List[str], correct_output: List[str]) -> List[Tuple]:
         assert len(data) == len(correct_output)
