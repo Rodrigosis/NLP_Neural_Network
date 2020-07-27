@@ -3,7 +3,7 @@ import random
 import torch
 from torch import optim
 
-from transformers import TransformStringToTensor
+from old.transformers import TransformStringToTensor
 
 
 class Optimizer:

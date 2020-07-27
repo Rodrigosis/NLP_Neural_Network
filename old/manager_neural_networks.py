@@ -1,12 +1,12 @@
 from typing import List
 import torch
 
-from nn_find_correct_piece import FindCorrectPiece
-from nn_complete_requirement import CompleteRequirement
-from nn_choose_type_question import ChooseTypeQuestion
-from nn_confirms_quality import ConfirmsQuality
-from optimizer import Optimizer
-from transformers import TransformStringToTensor
+from old.nn_find_correct_piece import FindCorrectPiece
+from old.nn_complete_requirement import CompleteRequirement
+from old.nn_choose_type_question import ChooseTypeQuestion
+from old.nn_confirms_quality import ConfirmsQuality
+from old.optimizer import Optimizer
+from old.transformers import TransformStringToTensor
 
 
 class ManagerNeuralNetworks:

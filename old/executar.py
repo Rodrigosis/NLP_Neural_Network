@@ -1,5 +1,5 @@
 if __name__ == '__main__':
-    from manager_neural_networks import ManagerNeuralNetworks
+    from old.manager_neural_networks import ManagerNeuralNetworks
     import pandas as pd
 
     manager = ManagerNeuralNetworks()
@@ -30,5 +30,5 @@ if __name__ == '__main__':
     loss = manager.teste(requisitos, corretos)
     print(loss)
 
-    from nn_find_correct_piece import FindCorrectPiece
+    from old.nn_find_correct_piece import FindCorrectPiece
     manager.optimizer(FindCorrectPiece(), requisitos, corretos, 5, 1000, 1e-6, 0, 'basic_questions')
