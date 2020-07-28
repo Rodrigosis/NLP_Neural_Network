@@ -1,3 +1,4 @@
+from typing import List
 from numpy import array
 
 from analyze_employment.text_transformers.characters import Characters
@@ -5,26 +6,39 @@ from analyze_employment.text_transformers.characters import Characters
 
 class Convert:
 
-    def text_to_array(self, text: str) -> array:
-        words = text.split()
+    def __init__(self):
+        self.transform_text = Characters().from_character
+        self.transform_array = Characters().from_number
 
-        text_array = []
-        for word in words:
-            word_int = []
-            for letter in word:
-                word_int.append(Characters().from_character(letter))
+    def text_to_array(self, text_list: List[str]) -> List[array]:
+        data = []
 
-            text_array.append(array(word_int))
+        for text in text_list:
+            words = text.split()
 
-        return array(text_array)
+            text_array = []
+            for word in words:
+                word_int = []
+                for letter in word:
+                    word_int.append(self.transform_text(letter))
 
-    def array_to_text(self, text_array: array) -> str:
-        text = ''
+                text_array.append(array(word_int))
 
-        for word in text_array:
-            for letter in word:
-                character = Characters().from_number(letter)
-                text = text + str(character)
-            text = text + ' '
+            data.append(array(text_array))
 
-        return text
+        return data
+
+    def array_to_text(self, text_array_list: List[array]) -> List[str]:
+        data = []
+
+        for text_array in text_array_list:
+            text = ''
+
+            for word in text_array:
+                for letter in word:
+                    text = text + str(self.transform_array(letter))
+                text = text + ' '
+
+            data.append(text)
+
+        return data

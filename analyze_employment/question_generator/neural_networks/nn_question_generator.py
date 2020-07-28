@@ -2,9 +2,9 @@ import torch
 from torch import nn
 
 
-class FindCorrectPiece(nn.Module):
+class QuestionGenerator(nn.Module):
     def __init__(self):
-        super(FindCorrectPiece, self).__init__()
+        super(QuestionGenerator, self).__init__()
         # with torch.no_grad():
         # torch.manual_seed(42)
 
