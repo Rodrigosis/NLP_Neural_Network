@@ -17,9 +17,11 @@ class QuestionGeneratorOptimizer:
             batch_packages = self._create_batchs(data_tuples, batchs)
             loss = 0
             for batch in batch_packages:
-                predicted_data = network(batch['data'])
+                predicted_data = network.forward(batch['data'])
                 optimizer = optim.Adam(network.parameters(), lr=learning_rate, weight_decay=weight_decay)
                 network_loss = loss = network.criterion_l1_loss(predicted_data, batch['correct_output'])
+
+                print(loss)
                 network_loss.backward()
                 optimizer.step()
 
@@ -55,6 +57,6 @@ class QuestionGeneratorOptimizer:
                 data.append(i[0])
                 correct_output.append(i[1])
 
-            batchs_dict.append({'data': data[0], 'correct_output': correct_output[0]})
+            batchs_dict.append({'data': data, 'correct_output': correct_output})
 
         return batchs_dict

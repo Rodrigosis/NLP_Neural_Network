@@ -72,7 +72,7 @@ class Characters:
             "'": 67,
             '|': 68,
             '/': 69,
-            '\/': 70,
+            '’': 70,
             ',': 71,
             '.': 72,
             '<': 73,
@@ -113,7 +113,7 @@ class Characters:
                 char = item[0]
                 break
 
-        if char:
+        if char or letter == 0:
             return char
         else:
             raise ValueError(f'Characters "{letter}" is unknown')
